@@ -1,0 +1,19 @@
+{
+  "name": "gulp-ejs-loader",
+  "version": "1.0.0",
+  "description": "a gulp loader for ejs",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Evont",
+  "license": "ISC",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.8",
+    "parse5": "^5.1.0"
+  }
+}
