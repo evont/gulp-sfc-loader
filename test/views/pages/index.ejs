@@ -1,26 +1,33 @@
-<style inline>
-  .a {
-    color: #ccc;
-  }
-  .b {
-    color: #ccc;
-  }
-  .c {
-    color: #ccc;
-  }
-  .c {
-    color: #ccc;
-  }
-  .e {
-    color: #ccc;
-  }
-  .f {
-    color: #ccc;
-  }
-  .g {
-    color: #ccc;
+<style inline lang="postCss">
+  :fullscreen {
+    color: #333;
+    font-size: 28px;
   }
 </style>
+<style inline>
+  .a {
+    color: #369;
+  }
+  .b {
+    color: #369;
+  }
+  .c {
+    color: #369;
+  }
+  .c {
+    color: #369;
+  }
+  .e {
+    color: #369;
+  }
+  .f {
+    color: #369;
+  }
+  .g {
+    color: #369;
+  }
+</style>
+
 
 <template>
   <% let tabList = [{'tabName' : '头条', 'tabInd' : 1},
@@ -33,25 +40,45 @@
   ]; %>
   <div class="dMod">
     <div class="dViewPoint-moreList">
-    <% model.list.forEach(info => { %>
-    <a href="/viewpoint/<%= info.id %>.html" class="dViewPoint-moreList-item">
-    <div class="dSub-info">
-      <div class="dSub-info-title"><%= info.title %></div>
-      <div class="dSub-info-name">
-          <span><%= info.time %></span>
-          <span><%= info.name %></span>
+      <% model.list.forEach(info => { %>
+      <a href="/viewpoint/<%= info.id %>.html" class="dViewPoint-moreList-item">
+      <div class="dSub-info">
+        <div class="dSub-info-title"><%= info.title %></div>
+        <div class="dSub-info-name">
+            <span><%= info.time %></span>
+            <span><%= info.name %></span>
+        </div>
       </div>
+      <div class="dSub-pic" style="background :url(<%= info.pic %>) no-repeat 50% 50%;background-size: 100%"></div>
+      </a>
+      <% }) %>
     </div>
-    <div class="dSub-pic" style="background :url(<%= info.pic %>) no-repeat 50% 50%;background-size: 100%"></div>
-    </a>
-    <% }) %>
-  </div>
   </div>
 </template>
 
 <script>
   const a = 2;
   [1, 2, 3].map((n) => n + 1);
+  new Promise((res, rej) => {
+    setTimeout(res(10))
+  })
+</script>
+
+
+
+<script>
+  const b = 3;
+  [1, 4, 3].map((n) => n + 1);
+  new Promise((res, rej) => {
+    setTimeout(res(10))
+  })
+</script>
+
+
+
+<script>
+  const a = 2;
+  [5, 6, 3].map((n) => n + 1);
   new Promise((res, rej) => {
     setTimeout(res(10))
   })

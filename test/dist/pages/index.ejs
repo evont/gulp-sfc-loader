@@ -1,0 +1,18 @@
+<head>
+  <style>.a {color: #369;}.b {color: #369;}.c {color: #369;}.c {color: #369;}.e {color: #369;}.f {color: #369;}.g {color: #369;}</style>
+</head>
+<body>
+  <% let tabList = [{'tabName' : '头条', 'tabInd' : 1},
+  {'tabName' : '解读', 'tabInd' : 2},
+  {'tabName' : '情报', 'tabInd' : 3},
+  {'tabName' : 'NBA', 'tabInd' : 7},
+  {'tabName' : '买量', 'tabInd' : 4},
+  {'tabName' : '战绩', 'tabInd' : 5},
+  {'tabName' : '视点', 'tabInd' : 6},
+  ]; %><div class="dMod"><div class="dViewPoint-moreList"><% model.list.forEach(info =>{ %><a href="/viewpoint/<%= info.id %>.html" class="dViewPoint-moreList-item"><div class="dSub-info"><div class="dSub-info-title"><%= info.title %></div><div class="dSub-info-name"><span><%= info.time %></span><span><%= info.name %></span></div></div><div class="dSub-pic" style="background :url(<%= info.pic %>) no-repeat 50% 50%;background-size: 100%"></div></a><% }) %></div></div>
+
+  <script>
+"use strict";var a=2;[1,2,3].map(function(t){return t+1}),new Promise(function(t,e){setTimeout(t(10))});
+"use strict";var b=3;[1,4,3].map(function(t){return t+1}),new Promise(function(t,e){setTimeout(t(10))});
+"use strict";var a=2;[5,6,3].map(function(t){return t+1}),new Promise(function(t,e){setTimeout(t(10))});</script>
+</body>

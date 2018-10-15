@@ -12,8 +12,18 @@
   "author": "Evont",
   "license": "ISC",
   "dependencies": {
+    "babel-core": "^6.26.3",
     "gulp": "^3.9.1",
     "gulp-util": "^3.0.8",
-    "parse5": "^5.1.0"
+    "parse5": "^5.1.0",
+    "postcss": "^7.0.5",
+    "postcss-load-config": "^2.0.0",
+    "uglify-js": "^3.4.9",
+    "vinyl": "^2.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "gulp-babel": "^8.0.0"
   }
 }

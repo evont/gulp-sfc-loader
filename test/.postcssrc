@@ -1,0 +1,7 @@
+{
+  "map": false,
+  "from": undefined,
+  "plugins": {
+    "postcss-px2rem": { "remUnit": 14 },
+  }
+}
