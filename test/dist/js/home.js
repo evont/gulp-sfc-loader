@@ -1,1 +1,0 @@
-/*home/index*/"use strict";var a=2;[1,2,3].map(function(t){return t+1}),new Promise(function(t,e){setTimeout(t(10))});/*home/index*/

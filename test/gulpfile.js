@@ -16,7 +16,7 @@ gulp.task('default', () => {
         },
         jsConfig: {
           name: (path) => {
-            return path.match(/\w+(?=\/)(?!\.ejs)/g)[0];
+            return path.match(/\w+(?=\/)(?!\.ejs)/g)[0] ;
           },
           outputDir: './dist/css/',
         },

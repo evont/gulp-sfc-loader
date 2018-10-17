@@ -45,6 +45,9 @@ async function task(file, encoding, settings, cb) {
 
   outputDir.js = getType(settings.jsConfig.name) === 'Function' ? settings.jsConfig.name(file.relative) : settings.jsConfig.name;
 
+  let styleResult = '';
+  let scriptResult = '';
+
   for (let i = 0, len = fragment.childNodes.length; i < len; i += 1) {
     const node = fragment.childNodes[i];
     const type = node.tagName;
@@ -60,9 +63,14 @@ async function task(file, encoding, settings, cb) {
         isInline ? inlineStyle += style : outputStyle += style;
       } 
       if (type === 'script') {
-        let script = parse5.serialize(node);
-        script = scriptProcess(script, settings.babelOption);
-        isInline ? inlineScript += script : outputScript += script;
+        const src = getAttribute(node, 'src');
+        if (src) {
+          scriptResult += `<script src="${src}"></script>`
+        } else {
+          let script = parse5.serialize(node);
+          script = scriptProcess(script, settings.babelOption);
+          isInline ? inlineScript += script : outputScript += script;
+        }
       }
       if (type === 'template') {
         const docFragment = treeAdapeter.createDocumentFragment();
@@ -71,12 +79,14 @@ async function task(file, encoding, settings, cb) {
         tpl = ejsProcess(tpl);
         htmlStr += tpl;
       }
+      if (type === 'link') {
+        const href = getAttribute(node, 'href');
+        styleResult += `<link rel="text/stylesheet" href="${href}">`
+      }
     }
   }
   
-  let styleResult = '';
-  let scriptResult = '';
-
+  
   const filePath = file.relative.replace(/\.\w+/, '');
   if (outputStyle) {
     let markTag = `/*${filePath}*/`;
@@ -98,7 +108,7 @@ async function task(file, encoding, settings, cb) {
      
       File.writeFile(distDir, outputStyle);
     });
-    styleResult += `<link rel="text/stylesheel" src="${distDir}">`
+    styleResult += `<link rel="text/stylesheet" href="${distDir}">`
   }
 
   if (outputScript) {
@@ -120,7 +130,7 @@ async function task(file, encoding, settings, cb) {
       }
      
       File.writeFile(distDir, outputScript);
-    })
+    });
     scriptResult += `<script src="${distDir}"></script>`
   }
 
