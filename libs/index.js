@@ -1,5 +1,6 @@
 module.exports = {
   ejsProcess: require('./ejsProcess'),
   scriptProcess: require('./scriptProcess'),
-  postCssProcess: require('./postCssProcess'),
+  styleProcess: require('./styleProcess'),
+  File: require('./file'),
 }

@@ -1,0 +1,35 @@
+<style lang="postCss">
+  p {
+    color: #333;
+    font-size: 28px;
+    width: 40px;
+    height: 30px;
+  }
+</style>
+
+<template>
+  <div class="dMod">
+    <div class="dViewPoint-moreList">
+      <% model.list.forEach(info => { %>
+      <a href="/viewpoint/<%= info.id %>.html" class="dViewPoint-moreList-item">
+      <div class="dSub-info">
+        <div class="dSub-info-title"><%= info.title %></div>
+        <div class="dSub-info-name">
+            <span><%= info.time %></span>
+            <span><%= info.name %></span>
+        </div>
+      </div>
+      <div class="dSub-pic" style="background :url(<%= info.pic %>) no-repeat 50% 50%;background-size: 100%"></div>
+      </a>
+      <% }) %>
+    </div>
+  </div>
+</template>
+
+<script>
+  const a = 2;
+  [1, 2, 3].map((n) => n + 1);
+  new Promise((res, rej) => {
+    setTimeout(res(10))
+  })
+</script>

@@ -108,11 +108,10 @@ function minify(contents) {
 }
 
 function unescapeHTML(a) {
-  a = "" + a;
+  a = '' + a;
   return a.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&apos;/g, "'");
 }
-function ejsProcess(content) {
-  return minify(unescapeHTML(content));
-}
 
-module.exports = ejsProcess;
+module.exports = (content) => {
+  return minify(unescapeHTML(content));
+};
