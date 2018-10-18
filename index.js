@@ -21,6 +21,20 @@ function getAttribute (node, name) {
   }
 }
 
+function getOriginText(node, content) {
+  const tag = node.tagName;
+  let result = `<${tag}`;
+  if (node.attrs) {
+    var i = node.attrs.length, attr;
+
+    while (i--) {
+      attr = node.attrs[i];
+      result += ` ${attr.name}${attr.value ? '="' + attr.value + '"' : ''}`;
+    }
+  }
+  result += `>${content}</${tag}>`
+  return result;
+}
 function getType(obj) {
   const type = Object.prototype.toString.call(obj)
   return type.match(/(?<=\[object\s)\w+(?=\])/g)[0];
@@ -49,36 +63,42 @@ async function task(file, encoding, settings, cb) {
 
   for (let i = 0, len = fragment.childNodes.length; i < len; i += 1) {
     const node = fragment.childNodes[i];
-    const type = node.tagName;
+    const tag = node.tagName;
     const isInline = getAttribute(node, 'inline') === '';
     let lang = getAttribute(node, 'lang');
 
-    if (outTags.indexOf(type) >= 0) {
-      if (type === 'style') {
+    if (outTags.indexOf(tag) >= 0) {
+      if (tag === 'style') {
         let style = parse5.serialize(node);
         if (!style.trim()) return;
         if (!lang) lang = 'css';
         style = await styleProcess(style, lang);
         isInline ? inlineStyle += style : outputStyle += style;
       } 
-      if (type === 'script') {
+      if (tag === 'script') {
         const src = getAttribute(node, 'src');
+        const type = getAttribute(node, 'type');
         if (src) {
           scriptResult += `<script src="${src}"></script>`
         } else {
           let script = parse5.serialize(node);
-          script = scriptProcess(script, settings.babelOption);
-          isInline ? inlineScript += script : outputScript += script;
+          if (type === 'text/x-template') {
+            script = ejsProcess(script);
+            scriptResult += getOriginText(node, script);
+          } else {
+            script = scriptProcess(script, settings.babelOption);
+            isInline ? inlineScript += script : outputScript += script;
+          }
         }
       }
-      if (type === 'template') {
+      if (tag === 'template') {
         const docFragment = treeAdapeter.createDocumentFragment();
         treeAdapeter.appendChild(docFragment, node);
         let tpl = parse5.serialize(docFragment).replace(/<\/?template>/g, '');
         tpl = ejsProcess(tpl);
         htmlStr += tpl;
       }
-      if (type === 'link') {
+      if (tag === 'link') {
         const href = getAttribute(node, 'href');
         styleResult += `<link rel="text/stylesheet" href="${href}">`
       }
@@ -125,7 +145,7 @@ async function task(file, encoding, settings, cb) {
       }
     }
    
-    File.writeFile(distDir, outputScript);
+    await File.writeFile(distDir, outputScript);
     scriptResult += `<script src="${distDir}"></script>`
   }
 
@@ -139,9 +159,11 @@ async function task(file, encoding, settings, cb) {
                   .replace(new RegExp(settings.scriptReplaceTag, 'g'), scriptResult)
                   .replace(new RegExp(settings.bodyReplaceTag, 'g'), htmlStr);
     } else {
-      if (inlineStyle) result += `<style>${inlineStyle}</style>`;
+      styleResult += inlineStyle ? `<style>${inlineStyle}</style>` : '';
+      result += styleResult;
       result += htmlStr;
-      if (inlineScript) result += `<script>${inlineScript}</script>`;
+      scriptResult += inlineScript ? `<script>${inlineScript}</script>` : '';
+      result += scriptResult;
     }
   }
 

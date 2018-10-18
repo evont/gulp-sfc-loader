@@ -1,10 +1,232 @@
-<template>
-  fdsafadfsa
-  <p>fsdafasdfadsfasdfasfda</p>
-</template>
+<script type="text/x-template" id="tpl_header">
+  <% var isSporttrey = config.isSporttrey(gamename);
+  var navList = [];
+    if (isSporttrey) {
+      navList = [
+        {type: 'Sporttrey320', name: '竞足'},
+        {type: 'Sporttrey307', name: '竞篮'},
+        {type: 'ZuCai14', name: '胜负彩'},
+      ];
+    } else {
+      navList = [
+        {type: 'ssq', name: '双色球'},
+        {type: 'ChaoJiDaLeTou', name: '大乐透'}, 
+        {type: '3d', name: '福彩3D'},
+        {type: 'PaiLieSan', 'name': '排列三'}
+      ];
+    }
+    %>
+  <div class="dIndex-header">
+    <div class="dIndex-header-logo">
+      <img src="/img/logo_pWhite.png?v=71767d55f7">
+    </div>
+    <div class="dIndex-header-middle">
+      <div class="dMod-toggler dMod-toggler_pRev">
+        <a class="dMod-toggler-item" data-status="<%= isSporttrey ? 1 : 0 %>" href="/index/Sporttrey320.html">竞技彩</a>
+        <a class="dMod-toggler-item" data-status="<%= isSporttrey ? 0 : 1 %>" href="/index/ssq.html">数字彩</a>
+      </div>
+    </div>
+  </div>
+  <div class="dMod-nav dMod-nav_fTab dMod-nav_pNoBottom">
+    <% for (var i = 0, len = navList.length; i < len; i += 1) { var item = navList[i];%>
+      <a class="dMod-nav-item" data-status="<%= item.type == gamename ? 1 : 0 %>" href="/index/<%= item.type %>.html"><%= item.name %></a>
+    <% } %>
+  </div>
+</script>
+<script type="text/x-template" id="tpl_banner">
+  <% if (model.active != null && model.active.length > 0 ) { var length = model.active.length;%>
+  
+    <ul class="j-slider-box dMod-slider-box dFun-clearboth dMod-slider_pTrans" style="width: <%= length * 100 %>%">
+      <% for (var i = 0; i < length; i++) { var activeItem = model.active[i];%> 
+        <li style="width: <%= 100 / length %>%">
+          <a href="<%= (/advert\.action(\?|\S*&)type=1/.test(activeItem.url)&& !addition.token) ? ('/login.html?url=' + encodeURIComponent(activeItem.url.replace(/&?type=1/,''))) : activeItem.url.replace(/&?type=0/,'') %>">
+            <img src="<%= activeItem.img %>" />
+          </a>
+        </li>
+      <% }%>
+    </ul>
+    <div class="j-slider-dot dMod-slider-dot hide"></div>
+  <% }%>
+</script>
 
-<style>
-  p { 
-    color: #ddd;
-  }
-</style>
+<script type="text/x-template" id="tpl_hotmaster">
+  <% if (model.hotmaster != null && gamename !== 'ZuCai14') {%>
+  
+    <h2 class="dIndex-title"><%= config.isSporttrey(gamename) ? '特约分析师' : '热门达人' %></h2>
+    <div class="dIndex-box">
+      <div class="j-slider dMod-slider dIndex-hotmaster" data-type="hotmaster">
+        <ul class="dMod-slider-box dIndex-hotmaster-box dFun-clearboth">
+          <li>
+            <% for (var j = 0; j < model.hotmaster.length; j++){ var hot = model.hotmaster[j]; if(j > 6) { break; }%>
+              <span class="j-darenItem dSub-darenItem" data-href="/DaRenDetail/<%= hot.MemberId %>/<%= gamename %>.html?iid=10" data-paymaxid="<%= hot.paymaxid %>"
+                data-memberid="<%= hot.MemberId %>" data-isnew="<%= hot.paycount > 0 ? 1 : 0 %>">
+                <div class="dSub-avatar">
+                  <img class="lazy" src="https://dr.vipc.cn/images/daren/user-default.png?v=9c59a03da8" data-original="<%=hot.Pic %>">
+                </div>
+                <p class="ellipsis dSub-nickname"><%= hot.NickName %></p>
+                <p class="ellipsis dSub-remark"><%= hot.Remark %></p>
+              </span>
+              <% }%>
+              <a class="dSub-darenItem" href="<%= config.isSporttrey(gamename) ? '/SpecialList/' + gamename + '.html' : '/expert/' + gamename + '.html' %>">
+                <div class="dSub-avatar">
+                  <img src="/img/moremaster.png?v=15b1efd467">
+                </div>
+                <p class="ellipsis dSub-nickname">更多</p>
+                <p class="ellipsis dSub-remark"></p>
+              </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <% }%>
+</script>
+
+<script type="text/x-template" id="tpl_rollrecord">
+  <% if (model.kuaixun != null) {%>
+    <div class="j-rollrecord dMod-payRecord dMod-payRecord_aIndex">
+        <% for(var i = 0, len = model.kuaixun.length; i < len; i++) {
+            var info = model.kuaixun[i];
+       %>
+       <a href="<%= info.url %>" class="<%= i==0 ? 'select' : '' %> ellipsis"><%= info.title %></a>
+        <% }%>
+    </div>
+  <% }%>
+</script>
+
+<script type="text/x-template" id="tpl_tab">
+  <% if(model.tab.length) { %>
+  <div class="j-ind-menubar dIndex-entry">
+    <% for (var i = 0, barcount = model.tab.length; i < barcount; i++) { var tabItem = model.tab[i];%>
+    <a class="dIndex-entry-item" href="<%= tabItem.link %>" data-bartype="<%= tabItem.text %>">
+        <span class="">
+            <img src="<%= model.tab[i].img %>"><%= tabItem.text %>
+        </span>
+    </a>
+    <% }%>
+  </div>
+  <% }%>
+</script>
+
+<script type="text/x-template" id="tpl_takingon">
+  <% if (model.zucaitakingon && model.zucaitakingon.length > 0) {%>
+    <% var issueList = model.zucaiissue || []; var issue = issueList.indexOf(model.issue) === -1 ? issueList[0] : model.issue;%>
+    <h2 class="dIndex-title">
+      当期对阵
+      <div class="dIndex-title-action">
+        <div class="dMod-select">
+          <select class="j-issue-select" name="issue">
+            <% for (var i = 0, len = issueList.length; i < len; i += 1) { 
+              var selected = false;
+              if (issue === issueList[i]) {
+                selected = true;
+              }
+            %>
+            <option value="<%= issueList[i] %>" <% if (selected) { %>selected="<% } %>"><%= issueList[i] %>期</option>
+            <% } %>
+          </select>
+          <span class="dMod-select-text"><span class="j-issue-option"><%= issue %></span>期</span>
+        </div>
+      </div>
+    </h2>
+    <div class="j-takingon-list dIndex-takingon">
+      <div class="dIndex-takingon-list" data-status="0">
+        <% for (var i = 0, len =  model.zucaitakingon.length; i < len; i++) { var item = model.zucaitakingon[i]; %>
+          <div class="dIndex-takingon-item">
+            <div class="dSub-team dSub-team_fTop">
+              <div class="dSub-team-name"><span><%= item.hometeam.substr(0, 4) %></span></div>
+              <div class="dSub-team-pic">
+                <img src="<%= item.homepic %>">
+              </div>
+            </div>
+            <span class="dSub-order"><%= i + 1 %></span>
+            <div class="dSub-team dSub-team_fBottom">
+              <div class="dSub-team-pic">
+                <img src="<%= item.guestpic %>">
+              </div>
+              <div class="dSub-team-name"><span><%= item.guestteam.substr(0, 4) %></span></div>
+            </div>
+          </div>
+        <% }%>
+      </div>
+    </div>
+  <% }%>
+</script>
+
+<script type="text/x-template" id="tpl_discountpackage">
+<% if (model.discountpackage && model.discountpackage.length > 0) {%>
+  <h2 class="dIndex-title">包周套餐 不中退款</h2>
+  <div class="dIndex-discountPkg">
+      <% for(var ind = 0, len = model.discountpackage.length; ind < len; ind++) { 
+        var ele = model.discountpackage[ind];
+     %>
+          <% if(ele) {%>
+          <a class="dIndex-discountPkg-item" data-index="<%= ind %>" href="/DiscountPackage/number_detail/<%= gamename %>/<%= ele.memberid %>.html">
+              <div class="dSub-avatar">
+                  <img class="lazy" src="https://dr.vipc.cn/images/daren/user-default.png?v=9c59a03da8" data-original="<%= ele.pic %>">
+                  <span class="dSub-level dIcon-expertLevel" data-level="<%= ele.level %>"></span>
+              </div>
+              <div class="dSub-awardlist">
+                  <% if(ele.awardlist && ele.awardlist[0]){ %>
+                      <p><span class="award-text award-text_pBold"><%= ele.awardlist ? ele.awardlist[0] : '' %></span></p>
+                  <% } %>
+                  <% if(ele.awardlist && (ele.awardlist[1] || ele.awardlist[2])){ %>
+                      <p>
+                          <span class="award-text"><%= ele.awardlist[1] ? ele.awardlist[1] : ele.awardlist[2] %></span>
+                      </p>
+                  <% } %>
+              </div>
+              <div class="dSub-action">
+                  <p class="dSub-action-check">立即查看</p>
+                  <p class="dSub-action-price"><%= ele.price %>钻石 / <%= /ssq|ChaoJiDaLeTou/i.test(gamename) ? 3 : 7 %>期</p>
+              </div>
+          </a>
+          <% }%>
+      <% }%>
+  </div>
+  <p class="dIndex-subTitle">包周栏目享受不中退款服务</p>
+ <% }%>
+</script>
+<script type="text/x-template" id="tpl_speciallist">
+<% if (model.speciallist && model.speciallist.length > 0) {%>
+  <h2 class="dIndex-title">今日推荐</h2>
+  <div class="j-mod-recommendlist dIndex-box"></div>
+<% }%>
+</script>
+<script type="text/x-template" id="tpl_shidanlist">
+<% if (model.shidanlist && model.shidanlist.length > 0) {%>
+  <div class="j-mod-recommendlist dIndex-box"></div>
+<% }%>
+</script>
+<script type="text/x-template" id="tpl_yuegaolist">
+<% if (model.yuegaolist && model.yuegaolist.length > 0) {%>
+  <div class="j-mod-recommendlist dIndex-box"></div>
+<% }%>
+</script>
+<script type="text/x-template" id="tpl_hotlist">
+
+  <div class="dIndex-part dMod">
+      <h2 class="dIndex-title">热门预测</h2>
+      <div class="j-mod-recommendlist dIndex-box"></div>
+  </div>
+  <div class="j-loadRecommand dIndex-loadMore hide">查看更多</div>
+<% if (model.hotlist && model.hotlist.length > 0) { %>
+<% }%>
+</script>
+
+<script type="text/x-template" id="tpl_midlands">
+<% if (model.indexmidlands && model.indexmidlands.length > 0) { %>
+  <% var info = model.indexmidlands.find(function(ele) { return ele.position == '位置4' }); 
+      if (info && !model.nolottery) {
+ %>
+    <a href="<%= info.url %>"><img src="<%= info.pic %>"></a>
+  <% }%>
+<% }%>
+</script>
+<script type="text/x-template" id="tpl_autoreg">
+  <div class="dIndex-autoReg-mask"></div>
+  <div class="j-regBonus dIndex-autoReg-bonus" data-status="0">
+      <a class="j-autoreg-close dSub-close" href="javascript:void(0)"></a>
+      <a class="dSub-bonus" href="/Bonus/Success.html?from=regist"></a>
+  </div>
+</script>

@@ -21,16 +21,16 @@ function trim(str) {
 }
 
 function minify(contents) {
-  var htmlBuilder = [];
-  var inner = false,
+  let htmlBuilder = [];
+  let inner = false,
       intag = false, //<div> or </div>
       intagin = false, //<% expr %> ... <% for(var a=1; a "<" 5
       inscript = false,
       incss = false;
 
-  var innerTextBuilder = [];
-  for (var i = 0; i < contents.length; i++) {
-      var charstr = contents[i];
+  let innerTextBuilder = [];
+  for (let i = 0; i < contents.length; i++) {
+    let charstr = contents[i];
       if (charstr === '<') {
           if (contents.substr(i, 7).toLowerCase() === '<script') {
               inscript = true;
@@ -58,7 +58,7 @@ function minify(contents) {
 
           if (inner && innerTextBuilder.length) {
               //debugger;
-              var innerTextStr = innerTextBuilder.join('');
+              let innerTextStr = innerTextBuilder.join('');
               htmlBuilder.push(trim(innerTextStr))
               innerTextBuilder = [];
           }

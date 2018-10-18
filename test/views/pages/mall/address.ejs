@@ -1,0 +1,274 @@
+<link rel="stylesheet" href="/dist/css/mall.css?v=059d7ee339" />
+<style>
+    .top {
+        display: block;
+    }
+    .info {
+        background: #fff;
+    }
+    .pic {
+        width: 70px;
+        height: 70px;
+        margin: 10px;
+    }
+    .pic img {
+        width: 100%;
+    }
+    .text {
+        margin-top: 12px;
+        line-height: 26px;
+    }
+    .form {
+        background: #fff;
+        margin-top: 10px;
+        padding: 10px;
+    }
+    .form p {
+        margin-bottom: 10px;
+    }
+    .form div {
+        margin: 10px 0;
+    }
+    .form input, .form textarea {
+        width: 100%;
+        border: 0;
+        background: #f4f4f4;
+        padding: 0.8em;
+        height: 40px;
+        box-sizing: border-box;
+    }
+    .form textarea {
+        height: 6em;
+        resize: none;
+    }
+    .form .btn {
+        display: block;
+        margin: 40px 0 20px;
+        height: 50px;
+        line-height: 50px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    .back-top {
+        display: none;!important;
+    }
+    .dFoot{
+        display: none;
+    }
+</style>
+<script id="tmpl-content" type="text/x-template" inline >
+    <%%
+        var config = $.config, tool = $.tool, param = config.param, backurl = param.backurl, getLink = $.tool.getLink;
+        var info = $.localStorage('2018214');
+        if (info) {
+            info = $.json(info);
+        } else {
+            info = {};
+        }
+    %%>
+    
+    <div class="top">
+        <a class="back" href="<%%= getLink('mall/product/T4001785.html') %%>">返回</a>
+        <h1>填写订单</h1>
+    </div>
+
+    <div class="wrap wrap2">
+        <div class="info flex">
+            <div class="pic"><img src="/img/mall/T4001785.png?v=eb5d35c74d"></div>
+            <div class="text">
+                <p>“真爱”情人节豪华套装</p>
+                <p>258钻石</p>
+            </div>
+        </div>
+        <div class="form">
+            <p>收货信息</p>
+            <div><input type="text" class="name txt" placeholder="收件人:" value="<%%= info.username || '' %%>"></div>
+            <div><input type="tel" class="phone txt" placeholder="手机号码:" value="<%%= info.mobile || $.cookie('un') || '' %%>"></div>
+            <div><textarea class="addr" placeholder="地址:"><%%= info.address || '' %%></textarea></div>
+            <div class="btn">确定</div>
+        </div>
+    </div>
+</script>
+ <template>
+  <div id="app">
+    <%- include(viewRoot + '/components/common/loading.ejs') %>
+  </div>
+ </template>
+    <script>
+        
+        $(function () {
+            var config = $.config,
+                tool = $.tool,
+                Model = $.Model,
+                View = $.View,
+                Controller = $.Controller,
+                param = config.param;
+             var tpl = $('#tmpl-content').html();
+            function validate(result, back) {
+                var getLink = tool.getLink;
+
+                result = typeof result === 'string' ? $.json(result) : result;
+
+                //status不为0是出错
+                if (result.status !== 0) {
+                    switch (result.status) {
+                        //token已经过期或者token格式错误
+                        case 103:
+                            $.removeCookie(config.token);
+                            $.removeCookie(config.token2);
+                            location.replace(getLink('login.html?url=' + encodeURIComponent(location.href.replace(/token=[^&]*&?/, ''))));
+                            break;
+
+                        //余额不足
+                        case 104:
+                            tool.box('<div class="box-text"><p>余额不足，去充值？</p></div><div class="box-btn">' + (back ? '<a class="bb-cancel" href="javascript: history.back();">取消</a>' : '<a class="bb-cancel j-box-close box-close" href="">取消</a>') + '<a class="bb-sure" href="' + getLink('knack/recharge.html?callbackUrl=' + encodeURIComponent(location.href) + tool.ios.iosredirect('&', 1)) + '">确定</a></div>');
+                            window._hmt && _hmt.push(['_trackEvent', 'mall', 'recharge']);
+                            break;
+
+                        //账户被冻结
+                        case 105:
+                            tool.box('<div class="box-text">该账户因为异常已被冻结，如有疑问可以咨询客服' + ($.support.touch ? '<a class="link keep-hide" href="tel:000000000"></a>' : '') + '</div><div class="box-btn">' + (back ? '<a class="bb-sure" href="javascript: history.back();">确定</a>' : '<a class="bb-sure j-box-close box-close" href="">确定</a>') + '</div>');
+                            break;
+
+                        //未实名认证
+                        case 106:
+                            tool.box('<div class="box-text">还未实名认证，去认证？</div><div class="box-btn">' + (back ? '<a class="bb-cancel" href="javascript: history.back();">取消</a>' : '<a class="bb-cancel j-box-close box-close" href="">取消</a>') + '<a class="bb-sure" href="' + getLink('member/Index.html') + '">确定</a></div>');
+                            break;
+
+                        default:
+                            var alertMsg = result.msg || result.message;
+                            tool.box('<div class="box-text">' + alertMsg + '</div><div class="box-btn">' + (back ? '<a class="bb-sure" href="' + (config.param.mediaios == 1 ? getLink('index.html') : (history.length > 1 ? 'javascript: history.back();' : getLink('index.html'))) + '">确定</a>' : '<a class="bb-sure j-box-close box-close" href="">确定</a>') + '</div>');
+                            break;
+                    }
+                    return false;
+                } else if (result.model && (result.model.result === false) && result.model.errormessage) {
+                    tool.box('<div class="box-text">' + result.model.errormessage + '</div><div class="box-btn">' + (back ? '<a class="bb-sure" href="' + (config.param.mediaios == 1 ? getLink('index.html') : (history.length > 1 ? 'javascript: history.back();' : getLink('index.html'))) + '">确定</a>' : '<a class="bb-sure j-box-close box-close" href="">确定</a>') + '</div>');
+                    return false;
+                }
+
+                return true;
+            }
+            tool.ready(function () {
+                if (!$.tool.isLogin()) {
+                    location.replace(tool.getLink('login.html?url=' + encodeURIComponent(location.href.replace(/token=[^&]*&?/, ''))));
+                    return;
+                }
+                $.jsonp({
+                    url : tool.createURL('mall/AddressList'),
+                    success: function (result) {
+                        new Controller({
+                            model: new Model(result),
+                            view: new View('#app', tpl),
+                            elements: {
+                                btn: '.btn'
+                            },
+                            events: {
+                                btn: 'click btnClick'
+                            },
+
+                            created: function () {
+                                this.autopay();
+                            },
+
+                            // 购买
+                            btnClick: function (e) {
+                                var username = $.trim($('.name').val()),
+                                    mobile = $.trim($('.phone').val()),
+                                    address = $.trim($('.addr').val());
+
+                                if (!username) {
+                                    tool.box('<div class="box-text">请输入收件人姓名</div><div class="box-btn"><a class="bb-sure j-box-close box-close" href="">确定</a></div>');
+                                    return;
+                                }
+                                if (!mobile) {
+                                    tool.box('<div class="box-text">请输入收件人电话</div><div class="box-btn"><a class="bb-sure j-box-close box-close" href="">确定</a></div>');
+                                    return;
+                                }
+                                if (!/^\\d{11}$/.test(mobile)) {
+                                    tool.box('<div class="box-text">手机号必须为11位数字</div><div class="box-btn"><a class="bb-sure j-box-close box-close" href="">确定</a></div>');
+                                    return;
+                                }
+                                if (!address) {
+                                    tool.box('<div class="box-text">请输入收件人地址</div><div class="box-btn"><a class="bb-sure j-box-close box-close" href="">确定</a></div>');
+                                    return;
+                                }
+                                window._hmt && _hmt.push(['_trackEvent', 'mall', 'confirm']);
+                                tool.box('<div class="box-text"><h3>“真爱”情人节豪华套装</h3><span class="minor">金额：</span><span class="em">258钻石</span></div><div class="box-btn"><a class="bb-cancel j-box-close box-close" href="">取消</a><a class="bb-sure" href="">确定支付</a></div>', [
+                                    {
+                                        selector: '.bb-sure',
+                                        eventName: 'click',
+                                        callback: function (e) {
+                                            $.preventDefault(e);
+                                            var _self = $(this);
+                                            if(_self.dataset('disabled') == 1) {
+                                                return
+                                            } else {
+                                                _self.dataset('disabled', 1);
+                                                $.localStorage('2018214', JSON.stringify({username: username, mobile: mobile, address: address}));
+                                                $.jsonp({
+                                                    url : tool.createURL('mall/AddOrder'),
+                                                    data: {
+                                                        name: username,
+                                                        phone: mobile,
+                                                        address: address
+                                                    },
+                                                    success: function (_result) {
+                                                        $.removeLocalStorage('autopay');
+                                                        _self.dataset('disabled', 0);
+                                                        _result.autopay = {
+                                                            url: tool.getLink('mall/autopayRecharge.html'),
+                                                            mallUrl: tool.getLink('mall/my/address.html'),
+                                                            money: 258,
+                                                            goback: 1
+                                                        };
+                                                        if (validate(_result) === false) {
+                                                            return;
+                                                        }
+                                                        if (_result.status === 502) {
+                                                            tool.box('<div class="bet-success">\
+                                                                <div class="bs-pic" style="border-color: #e5233e">\
+                                                                    <img width="22" height="22" src="/img/mall/bs-pic-fail.png?v=e9f9b26899" />\
+                                                                </div>\
+                                                                <div class="bs-text" style="color: #f24f4f">支付失败</div>\
+                                                                <div class="box-btn"><a class="bb-sure j-box-close box-close" href="">确定</a></div>\
+                                                            </div>');
+                                                        } else {
+                                                            tool.box('<div class="bet-success"><div class="bs-pic"><span class="bs-pic-cover"></span><img width="22" height="22" src="/img/mall/bs-pic.png?v=59dbf41720" /></div><div class="bs-text">已付款</div></div><div class="box-link"><a href="' + tool.getLink('mall/product/T4001785.html') + '">确定</a></div><div class="box-link"><a class="bb-normal" href="' + tool.getLink('mall/my/orderList.html') + '">查看订单</a></div>');
+                                                            setTimeout(function () {
+                                                                $('.bs-pic-cover').css({ width: 0 });
+                                                            }, 50);
+                                                        }
+                                                    }
+                                                });
+                                                window._hmt && _hmt.push(['_trackEvent', 'mall', 'buy']);
+                                            }
+                                            
+                                            
+                                        }
+                                    }
+                                ]);
+                            },
+
+                            // 自动支付
+                            autopay: function () {
+                                var self = this,
+                                    autopay = tool.autopay;
+                                if (!autopay) {
+                                    return;
+                                }
+
+                                if (param.autopay == 1) {
+                                    self.btn.trigger('click');
+                                    setTimeout(function () {
+                                        $('.bb-sure').trigger('click');
+                                    }, 50);
+                                }
+                            }
+                        }).init();
+
+                    }
+                });
+            });
+        });
+
+    </script>
