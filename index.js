@@ -29,7 +29,6 @@ function getType(obj) {
 async function task(file, encoding, settings, cb) {
   const content = file.contents.toString(encoding);
   const fragment = parse5.parseFragment(content);
-
   const outTags = ['link', 'style', 'script', 'template'];
   let result = '';
   let inlineStyle = '', inlineScript = '';
@@ -86,7 +85,6 @@ async function task(file, encoding, settings, cb) {
     }
   }
   
-  
   const filePath = file.relative.replace(/\.\w+/, '');
   if (outputStyle) {
     let markTag = `/*${filePath}*/`;
@@ -94,20 +92,18 @@ async function task(file, encoding, settings, cb) {
     markTag = markTag.replace(/\*/g, '\\*')
     markTag = `${markTag}.+${markTag}`;
     let distDir = `${path.dirname(settings.cssConfig.outputDir)}/css/${outputDir.css}.css`;
-    File.readFile(distDir, (data) => {
-      if (data) {
-        data = data.toString();
-        data = data.split('\n').join('');
-        const pattern = new RegExp(markTag, 'g');
-        if (pattern.test(data)) {
-          outputStyle = data.replace(pattern, outputStyle);
-        } else {
-          outputStyle = data + outputStyle;
-        }
+    let data = await File.readFile(distDir);
+    if (data) {
+      data = data.toString();
+      data = data.split('\n').join('');
+      const pattern = new RegExp(markTag, 'g');
+      if (pattern.test(data)) {
+        outputStyle = data.replace(pattern, outputStyle);
+      } else {
+        outputStyle = data + outputStyle;
       }
-     
-      File.writeFile(distDir, outputStyle);
-    });
+    }
+    await File.writeFile(distDir, outputStyle);
     styleResult += `<link rel="text/stylesheet" href="${distDir}">`
   }
 
@@ -117,20 +113,19 @@ async function task(file, encoding, settings, cb) {
     markTag = markTag.replace(/\*/g, '\\*')
     markTag = `${markTag}.+${markTag}`;
     let distDir = `${path.dirname(settings.jsConfig.outputDir)}/js/${outputDir.js}.js`;
-    File.readFile(distDir, (data) => {
-      if (data) {
-        data = data.toString();
-        data = data.split('\n').join('');
-        const pattern = new RegExp(markTag, 'g');
-        if (pattern.test(data)) {
-          outputScript = data.replace(pattern, outputScript);
-        } else {
-          outputScript = data + outputScript;
-        }
+    let data = await File.readFile(distDir);
+    if (data) {
+      data = data.toString();
+      data = data.split('\n').join('');
+      const pattern = new RegExp(markTag, 'g');
+      if (pattern.test(data)) {
+        outputScript = data.replace(pattern, outputScript);
+      } else {
+        outputScript = data + outputScript;
       }
-     
-      File.writeFile(distDir, outputScript);
-    });
+    }
+   
+    File.writeFile(distDir, outputScript);
     scriptResult += `<script src="${distDir}"></script>`
   }
 
@@ -153,6 +148,7 @@ async function task(file, encoding, settings, cb) {
   file.contents = new Buffer(result);
   cb(null, file);
 }
+
 module.exports = (options) => {
   const defaults = {
     componentPattern: 'component',

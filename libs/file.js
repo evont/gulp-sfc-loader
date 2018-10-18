@@ -2,36 +2,40 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = class File {
-  /* 避免读写文件出现无此目录的情况 */
-  static safeDir(filePath, callback) {
-    fs.access(path.dirname(filePath), fs.constants.F_OK, (err) => {
-      if (err) {
-        fs.mkdir(path.dirname(filePath), (err) => {
-          callback();
-        });
-      } else {
-        callback();
+  static mkdir(dir) {
+    const dirArr = dir.split(/[\/\\]/);
+    let path = '';
+    for (let i = 0, len = dirArr.length; i < len; i += 1) {
+      path += `${dirArr[i]}/`;
+      try {
+        fs.mkdirSync(path);
+      } catch (err) {
+        if (err.code === 'EEXIST')  continue;
       }
-    }); 
+    }
   }
   static writeFile(filePath, data) {
-    File.safeDir(filePath, () => {
+    return new Promise((resolve, reject) => {
       fs.writeFile(filePath, new Buffer(data), (err) => {
-        if (err) {
-          return console.log(err);
+        if (!err) {
+          resolve(); return;
+        } else if (err.code === 'ENOENT') {
+          File.mkdir(path.dirname(filePath));
+          File.writeFile(filePath, data);
+          resolve();
         }
       })
     })
   }
   static readFile(filePath, callback) {
-    File.safeDir(filePath, () => {
+    return new Promise((resolve, reject) => {
       fs.readFile(filePath, 'utf-8', (err, data) => {
         if (data) {
-          callback(data);
+          resolve(data);
         } else {
-          callback('');
+          resolve('');
         }
       })
-    })
+    });
   }
 }
