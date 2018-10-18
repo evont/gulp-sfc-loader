@@ -95,6 +95,13 @@ async function task(file, encoding, settings, cb) {
         const docFragment = treeAdapeter.createDocumentFragment();
         treeAdapeter.appendChild(docFragment, node);
         let tpl = parse5.serialize(docFragment).replace(/<\/?template>/g, '');
+        tpl = tpl.replace(/@requireTpl\(.+\)/g, (filePath) => {
+          filePath = filePath.match(/(?<=\(').+(?='\))/)[0];
+          filePath = path.resolve(path.dirname(file.path), filePath);
+          filePath = filePath.substr(process.cwd().length);
+          let data = File.readFile(`.${filePath}`);
+          return data;
+        });
         tpl = ejsProcess(tpl);
         htmlStr += tpl;
       }
@@ -112,7 +119,7 @@ async function task(file, encoding, settings, cb) {
     markTag = markTag.replace(/\*/g, '\\*')
     markTag = `${markTag}.+${markTag}`;
     let distDir = `${path.dirname(settings.cssConfig.outputDir)}/css/${outputDir.css}.css`;
-    let data = await File.readFile(distDir);
+    let data = File.readFile(distDir);
     if (data) {
       data = data.toString();
       data = data.split('\n').join('');
@@ -133,7 +140,7 @@ async function task(file, encoding, settings, cb) {
     markTag = markTag.replace(/\*/g, '\\*')
     markTag = `${markTag}.+${markTag}`;
     let distDir = `${path.dirname(settings.jsConfig.outputDir)}/js/${outputDir.js}.js`;
-    let data = await File.readFile(distDir);
+    let data = File.readFile(distDir);
     if (data) {
       data = data.toString();
       data = data.split('\n').join('');

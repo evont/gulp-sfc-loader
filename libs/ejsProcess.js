@@ -32,13 +32,6 @@ function minify(contents) {
   for (let i = 0; i < contents.length; i++) {
     let charstr = contents[i];
       if (charstr === '<') {
-          if (contents.substr(i, 7).toLowerCase() === '<script') {
-              inscript = true;
-          }
-
-          if (contents.substr(i, 6).toLowerCase() === '<style') {
-              inscript = true;
-          }
 
           //maybe [<]div> or [<]/div> or a [<] 5
           if (contents[i + 1] !== '%') {
@@ -64,32 +57,12 @@ function minify(contents) {
           }
       }
 
-      if (charstr === '>') {
-          if (i >= 4 && contents.substr(i - 6, 6).toLowerCase() === '/style') {
-              incss = false;
-              htmlBuilder.push(charstr);
-              inner = intag = intagin = false;
-              continue;
-          }
-          if (i >= 7 && contents.substr(i - 7, 7).toLowerCase() === '/script') {
-              inscript = false;
-              htmlBuilder.push(charstr);
-              inner = intag = intagin = false;
-              continue;
-          }
-      }
-
-      if (inscript || incss) {
+      if (inner) {
           htmlBuilder.push(charstr);
-          continue;
       } else {
-          if (inner) {
-              htmlBuilder.push(charstr);
-          } else {
-              if (charstr === '\r' || charstr === '\n' || charstr === '\t')
-                  continue;
-              innerTextBuilder.push(charstr);
-          }
+          if (charstr === '\r' || charstr === '\n' || charstr === '\t')
+              continue;
+          innerTextBuilder.push(charstr);
       }
       //maybe <...div[>] or </div[>] or <% a [>] 5 %> or <div ...  <% a [>] 5 %>[>]
       if (charstr === '>') {

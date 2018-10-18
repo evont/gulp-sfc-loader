@@ -28,14 +28,15 @@ module.exports = class File {
     })
   }
   static readFile(filePath, callback) {
-    return new Promise((resolve, reject) => {
-      fs.readFile(filePath, 'utf-8', (err, data) => {
-        if (data) {
-          resolve(data);
-        } else {
-          resolve('');
-        }
-      })
-    });
+    return fs.readFileSync(filePath, 'utf-8');
+    // new Promise((resolve, reject) => {
+    //   fs.readFileSync(filePath, 'utf-8', (err, data) => {
+    //     if (data) {
+    //       resolve(data);
+    //     } else {
+    //       resolve('');
+    //     }
+    //   })
+    // });
   }
 }
