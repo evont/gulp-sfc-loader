@@ -30,14 +30,6 @@
 
 
 <template>
-  <% let tabList = [{'tabName' : '头条', 'tabInd' : 1},
-  {'tabName' : '解读', 'tabInd' : 2},
-  {'tabName' : '情报', 'tabInd' : 3},
-  {'tabName' : 'NBA', 'tabInd' : 7},
-  {'tabName' : '买量', 'tabInd' : 4},
-  {'tabName' : '战绩', 'tabInd' : 5},
-  {'tabName' : '视点', 'tabInd' : 6},
-  ]; %>
   <div class="dMod">
     <div class="dViewPoint-moreList">
       <% model.list.forEach(info => { %>
@@ -54,7 +46,6 @@
       <% }) %>
     </div>
   </div>
-  @requireTpl('./component/index.ejs')
 </template>
 
 <link href="/fs.css">

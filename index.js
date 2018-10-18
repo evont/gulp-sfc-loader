@@ -40,7 +40,8 @@ function getType(obj) {
   return type.match(/(?<=\[object\s)\w+(?=\])/g)[0];
 }
 
-async function task(file, encoding, settings, cb) {
+async function task(file, encoding, settings) {
+  const now =  new Date().getTime();
   const content = file.contents.toString(encoding);
   const fragment = parse5.parseFragment(content);
   const outTags = ['link', 'style', 'script', 'template'];
@@ -111,7 +112,6 @@ async function task(file, encoding, settings, cb) {
       }
     }
   }
-  
   const filePath = file.relative.replace(/\.\w+/, '');
   if (outputStyle) {
     let markTag = `/*${filePath}*/`;
@@ -174,8 +174,8 @@ async function task(file, encoding, settings, cb) {
     }
   }
 
-  file.contents = new Buffer(result);
-  cb(null, file);
+  file.contents = new Buffer(result); 
+  return file;
 }
 
 module.exports = (options) => {
@@ -209,7 +209,9 @@ module.exports = (options) => {
     }
 
     if (file.isBuffer()) {
-      task(file, encoding, settings, callback);
+      task(file, encoding, settings).then(file => {
+        callback(null, file)
+      });
     }
   })
 
