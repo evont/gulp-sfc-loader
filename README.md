@@ -7,7 +7,7 @@ npm install gulp-sfc-loader
 ```
 
 ## Config
-```json
+```javascript
 {
   componentPattern: 'component',
   layout: false,
@@ -85,8 +85,9 @@ npm install gulp-sfc-loader
     setTimeout(res(10))
   })
 </script>
-```
+
 <!-- 对于带有type 为 x-templat 属性的script，将视为模版，将以压缩html 方式压缩标签中的代码。并附带在模版中  -->
 <script type="text/x-template" id="tpl_xtemplate">
   x-template support
 </script>
+```
