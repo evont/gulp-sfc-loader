@@ -30,20 +30,9 @@
 
 
 <template>
-  <div class="dMod">
-    <div class="dViewPoint-moreList">
-      <% model.list.forEach(info => { %>
-      <a href="/viewpoint/<%= info.id %>.html" class="dViewPoint-moreList-item">
-      <div class="dSub-info">
-        <div class="dSub-info-title"><%= info.title %></div>
-        <div class="dSub-info-name">
-            <span><%= info.time %></span>
-            <span><%= info.name %></span>
-        </div>
-      </div>
-      <div class="dSub-pic" style="background :url(<%= info.pic %>) no-repeat 50% 50%;background-size: 100%"></div>
-      </a>
-      <% }) %>
+  <div class="mod">
+    <div class="view">
+        @requireTpl('./component/index.ejs')
     </div>
   </div>
 </template>

@@ -20,7 +20,6 @@ function getAttribute (node, name) {
       }
   }
 }
-
 function getOriginText(node, content) {
   const tag = node.tagName;
   let result = `<${tag}`;
@@ -41,7 +40,6 @@ function getType(obj) {
 }
 
 async function task(file, encoding, settings) {
-  const now =  new Date().getTime();
   const content = file.contents.toString(encoding);
   const fragment = parse5.parseFragment(content);
   const outTags = ['link', 'style', 'script', 'template'];
@@ -193,7 +191,9 @@ module.exports = (options) => {
       name: 'common',
       outputDir: './',
     },
-    babelOption: {},
+    babelOption: {
+      presets: ['@babel/env']
+    },
   }
 
   const settings = Object.assign({}, defaults, options);

@@ -28,7 +28,18 @@ module.exports = class File {
     })
   }
   static readFile(filePath, callback) {
-    return fs.readFileSync(filePath, 'utf-8');
+    let fileContents;
+    try {
+      fileContents = fs.readFileSync(filePath, 'utf-8');
+    } catch(err) {
+      if (err.code === 'ENOENT') {
+        fileContents = '';
+      } else {
+        throw err;
+      }
+    }
+
+    return fileContents;
     // new Promise((resolve, reject) => {
     //   fs.readFileSync(filePath, 'utf-8', (err, data) => {
     //     if (data) {

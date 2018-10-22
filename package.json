@@ -1,7 +1,7 @@
 {
-  "name": "gulp-ejs-loader",
-  "version": "1.0.0",
-  "description": "a gulp loader for ejs",
+  "name": "gulp-sfc-loader",
+  "version": "0.0.1",
+  "description": "Gulp plugin for html SFC",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "babel-core": "^6.26.3",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-util": "^3.0.8",
     "map-stream": "0.0.7",
     "parse5": "^5.1.0",
