@@ -1,6 +1,6 @@
 module.exports = {
-  ejsProcess: require('./ejsProcess'),
-  scriptProcess: require('./scriptProcess'),
-  styleProcess: require('./styleProcess'),
+  htmlFormat: require('./format/html'),
+  scriptFormat: require('./format/script'),
+  styleFormate: require('./format/style'),
   File: require('./file'),
 }

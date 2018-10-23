@@ -85,6 +85,9 @@ function unescapeHTML(a) {
   return a.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&apos;/g, "'");
 }
 
-module.exports = (content) => {
-  return minify(unescapeHTML(content));
+module.exports = (content, isMinify = true) => {
+  if (isMinify) {
+    return minify(unescapeHTML(content));
+  }
+  return content;
 };

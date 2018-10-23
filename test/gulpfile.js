@@ -2,9 +2,8 @@ const gulp = require('gulp');
 const ejsLoader = require('../index');
 
 gulp.task('default', () => {
-  gulp.src('./views/pages/**/*.ejs')
+  return gulp.src('./views/pages/**/*.ejs')
       .pipe(ejsLoader({
-        layout: './views/layout.ejs',
         cssConfig: {
           name: (path) => {
             return path.match(/\w+(?=\/)(?!\.ejs)/g)[0] ;
@@ -15,8 +14,12 @@ gulp.task('default', () => {
           name: (path) => {
             return path.match(/\w+(?=\/)(?!\.ejs)/g)[0] ;
           },
-          outputDir: './dist/css/',
+          outputDir: './dist/js/',
         },
+        layoutConfig: {
+          isLayout: true,
+          layoutFile: './views/layout.ejs',
+        }
       }))
       .pipe(gulp.dest('./dist/pages/'));
 })

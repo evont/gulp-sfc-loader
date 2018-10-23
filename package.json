@@ -13,6 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "babel-core": "^6.26.3",
+    "clean-css": "^4.2.1",
+    "cssnano": "^4.1.7",
     "gulp": "^4.0.0",
     "gulp-util": "^3.0.8",
     "map-stream": "0.0.7",

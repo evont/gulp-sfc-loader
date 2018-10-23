@@ -4,7 +4,7 @@
     font-size: 28px;
   }
 </style>
-<style inline>
+<style>
   .a {
     color: #369;
   }
@@ -24,18 +24,17 @@
     color: #369;
   }
   .g {
-    color: #369;
+    color: #333;
   }
 </style>
-
-
-<template>
+   @requireTpl('./component/index.ejs')
   <div class="mod">
     <div class="view">
-        @requireTpl('./component/index.ejs')
+       sffasdfa <!-- @requireTpl('./component/index.ejs') -->
     </div>
   </div>
-</template>
+  <div class="mod">
+  </div>
 
 <link href="/fs.css">
 <style lang="postCss">
@@ -60,7 +59,7 @@
   })
 </script>
 
-<script src="/jquery.js"></script>
+<script src="/jquery.js" defer></script>
 
 <script>
   const a = 2;
