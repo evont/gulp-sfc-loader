@@ -153,13 +153,13 @@ async function task(file, encoding, settings) {
   styleResult += await outputFile(filePath, format.css.out, `${settings.cssConfig.outputDir}${fileName.css}.css`, 'css')
   scriptResult += await outputFile(filePath, format.js.out, `${settings.jsConfig.outputDir}${fileName.js}.js`, 'js')
 
-  if (settings.layout && !new RegExp(settings.layoutConfig.componentPattern, 'gi').test(file.relative)) {
-      let layoutTpl = fs.readFileSync(settings.layout, 'utf-8');
+  if (settings.layoutConfig.isLayout && !new RegExp(settings.layoutConfig.componentPattern, 'gi').test(file.relative)) {
+      let layoutTpl = fs.readFileSync(settings.layoutConfig.layoutFile, 'utf-8');
       if (format.css.inner.length) styleResult += `<style>${format.css.inner.join('')}</style>`;
       if (format.js.inner.length) scriptResult += `<style>${format.js.inner.join('')}</style>`;
-      result = layoutTpl.replace(new RegExp(settings.styleReplaceTag, 'g'), styleResult);
-      result = result.replace(new RegExp(settings.scriptReplaceTag, 'g'), scriptResult);
-      result = result.replace(new RegExp(settings.bodyReplaceTag, 'g'), htmlStr);
+      result = layoutTpl.replace(new RegExp(settings.layoutConfig.replaceTag.style, 'g'), styleResult);
+      result = result.replace(new RegExp(settings.layoutConfig.replaceTag.script, 'g'), scriptResult);
+      result = result.replace(new RegExp(settings.layoutConfig.replaceTag.body, 'g'), htmlStr);
   } else {
     styleResult += format.css.inner.length ? `<style>${format.css.inner.join('')}</style>` : '';
     result += styleResult;
