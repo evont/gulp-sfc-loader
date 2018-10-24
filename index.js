@@ -160,7 +160,7 @@ async function task(file, encoding, settings) {
   if (settings.layoutConfig.isLayout && !new RegExp(settings.layoutConfig.componentPattern, 'gi').test(file.relative)) {
       let layoutTpl = fs.readFileSync(settings.layoutConfig.layoutFile, 'utf-8');
       if (format.css.inner.length) styleResult += `<style>${format.css.inner.join('')}</style>`;
-      if (format.js.inner.length) scriptResult += `<style>${format.js.inner.join('')}</style>`;
+      if (format.js.inner.length) scriptResult += `<script>${format.js.inner.join('')}</script>`;
       result = layoutTpl.replace(new RegExp(settings.layoutConfig.replaceTag.style, 'g'), styleResult);
       result = result.replace(new RegExp(settings.layoutConfig.replaceTag.script, 'g'), scriptResult);
       result = result.replace(new RegExp(settings.layoutConfig.replaceTag.body, 'g'), htmlStr);
