@@ -9,12 +9,14 @@ gulp.task('default', () => {
             return path.match(/\w+(?=\/)(?!\.ejs)/g)[0] ;
           },
           outputDir: './dist/css/',
+          basePath: '/public/dist/css/'
         },
         jsConfig: {
           name: (path) => {
             return path.match(/\w+(?=\/)(?!\.ejs)/g)[0] ;
           },
           outputDir: './dist/js/',
+          basePath: '/path/css/'
         },
         layoutConfig: {
           isLayout: true,

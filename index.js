@@ -50,7 +50,8 @@ function extend(obj, obj2) {
   return newObj
 }
 
-async function outputFile(filePath, outputContents, distDir, type) {
+async function outputFile(filePath, outputContents, distDir, basePath, type) {
+  
   if (outputContents.length) {
     let markTag = `/*${filePath}*/`;
     let outoutStr = `${markTag}${outputContents.join('')}${markTag}`;
@@ -68,6 +69,9 @@ async function outputFile(filePath, outputContents, distDir, type) {
       }
     }
     await File.writeFile(distDir, outoutStr);
+  }
+  if (basePath !== '') {
+    distDir = basePath + path.basename(distDir);
   }
   const result = {
     css: `<link rel="text/stylesheet" href="${distDir}">`,
@@ -150,8 +154,8 @@ async function task(file, encoding, settings) {
 
   let htmlStr = htmlFormat(format.html.join(''));
   const filePath = file.relative.replace(/\.\w+/, ''); // 按文件名去除后缀区分，同目录下可多个文件
-  styleResult += await outputFile(filePath, format.css.out, `${settings.cssConfig.outputDir}${fileName.css}.css`, 'css')
-  scriptResult += await outputFile(filePath, format.js.out, `${settings.jsConfig.outputDir}${fileName.js}.js`, 'js')
+  styleResult += await outputFile(filePath, format.css.out, `${settings.cssConfig.outputDir}${fileName.css}.css`, settings.cssConfig.basePath, 'css')
+  scriptResult += await outputFile(filePath, format.js.out, `${settings.jsConfig.outputDir}${fileName.js}.js`, settings.jsConfig.basePath, 'js')
 
   if (settings.layoutConfig.isLayout && !new RegExp(settings.layoutConfig.componentPattern, 'gi').test(file.relative)) {
       let layoutTpl = fs.readFileSync(settings.layoutConfig.layoutFile, 'utf-8');
@@ -177,13 +181,13 @@ module.exports = (options) => {
     cssConfig: {
       name: 'common',
       outputDir: './',
-      basePath: './',
+      basePath: '',
       minify: true,
     },
     jsConfig: {
       name: 'common',
       outputDir: './',
-      basePath: './',
+      basePath: '',
       minify: true,
       babelOption: {
         presets: ['@babel/env']

@@ -12,11 +12,13 @@ npm install gulp-sfc-loader
   cssConfig: {
     name: 'common',
     outputDir: './',
+    basePath: '',
     minify: true,
   },
   jsConfig: {
     name: 'common',
     outputDir: './',
+    basePath: '',
     minify: true,
     babelOption: {
       presets: ['@babel/env']
@@ -34,16 +36,15 @@ npm install gulp-sfc-loader
   }
 }
 ```
-- componentPattern 当文件夹目录包含此字符串时，视为模块处理
-- layout 基本布局文件目录，如果此字段为false 则不替换模版，将默认将css 和js 内联
-
 - cssConfig 
   - name 导出css 的文件名，如果是字符串，则所有css 将合并在此文件中，也可以是一个带有文件目录参数的函数，可以解析使用当前目录名左作为css 文件名
   - outputDir 导出css 到指定的目录
   - minify 是否压缩，默认开启
+  - basePath 输出到页面中时文件的路径，默认情况下将使用outputDir 字段
 - jsConfig 
   - name 导出js 的文件名，如果是字符串，则所有js 将合并在此文件中，也可以是一个带有文件目录参数的函数，可以解析使用当前目录名左作为js 文件名
   - outputDir 导出js 到指定的目录
+  - basePath 输出到页面中时文件的路径，默认情况下将使用outputDir 字段
   - minify 是否压缩，默认开启
   - babelOption babel编译选项
 - layoutConfig
