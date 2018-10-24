@@ -9,6 +9,7 @@ npm install gulp-sfc-loader
 ## Config
 ```javascript
 {
+  htmlMinify: true,
   cssConfig: {
     name: 'common',
     outputDir: './',

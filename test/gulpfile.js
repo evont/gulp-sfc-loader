@@ -1,7 +1,7 @@
 const gulp = require('gulp');
 const ejsLoader = require('../index');
 
-gulp.task('default', () => {
+gulp.task('page', () => {
   return gulp.src('./views/pages/**/*.ejs')
       .pipe(ejsLoader({
         cssConfig: {
@@ -24,4 +24,19 @@ gulp.task('default', () => {
         }
       }))
       .pipe(gulp.dest('./dist/pages/'));
+})
+
+gulp.task('cpn', () => {
+  return gulp.src('./views/components/**/*.ejs')
+      .pipe(ejsLoader({
+        cssConfig: {
+          name: 'components',
+          outputDir: './dist/css/components/',
+        },
+        jsConfig: {
+          name: 'components',
+          outputDir: './dist/js/components/',
+        },
+      }))
+      .pipe(gulp.dest('./dist/components/'));
 })

@@ -79,7 +79,7 @@ async function outputFile(filePath, outputContents, distDir, basePath, type) {
   }
   return result[type] || '';
 }
-async function task(file, encoding, settings) {
+async function task(file, encoding, settings) {  
   let content = file.contents.toString(encoding);
   content = content.replace(/@requireTpl\(.+\)/g, (filePath) => {
     filePath = filePath.match(/(?<=\(').+(?='\))/)[0];
@@ -152,7 +152,7 @@ async function task(file, encoding, settings) {
     }
   }
 
-  let htmlStr = htmlFormat(format.html.join(''));
+  let htmlStr = htmlFormat(format.html.join(''), settings.htmlMinify);
   const filePath = file.relative.replace(/\.\w+/, ''); // 按文件名去除后缀区分，同目录下可多个文件
   styleResult += await outputFile(filePath, format.css.out, `${settings.cssConfig.outputDir}${fileName.css}.css`, settings.cssConfig.basePath, 'css')
   scriptResult += await outputFile(filePath, format.js.out, `${settings.jsConfig.outputDir}${fileName.js}.js`, settings.jsConfig.basePath, 'js')
@@ -178,6 +178,7 @@ async function task(file, encoding, settings) {
 
 module.exports = (options) => {
   const defaults = {
+    htmlMinify: true,
     cssConfig: {
       name: 'common',
       outputDir: './',
@@ -214,6 +215,10 @@ module.exports = (options) => {
 
     if (file.isStream()) {
       this.emit('error', new plugError(PLUGIN_NAME, 'Cannot use streamed files'));
+      return callback();
+    }
+
+    if (settings.layoutConfig.isLayout && new RegExp(settings.layoutConfig.componentPattern, 'gi').test(file.relative)) {
       return callback();
     }
 

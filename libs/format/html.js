@@ -88,6 +88,8 @@ function unescapeHTML(a) {
 module.exports = (content, isMinify = true) => {
   if (isMinify) {
     return minify(unescapeHTML(content));
+  } else {
+    content = content.trim();
   }
   return content;
 };
