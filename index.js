@@ -1,6 +1,5 @@
 const parse5 = require('parse5');
 const treeAdapeter = require('parse5/lib/tree-adapters/default');
-const fs = require('fs');
 const path = require('path');
 const through = require('through2');
 const plugError = require('plugin-error');
@@ -30,6 +29,7 @@ function getOriginNode (node) {
   treeAdapeter.appendChild(docFragment, node);
   return parse5.serialize(docFragment);
 }
+
 function getType(obj) {
   const type = Object.prototype.toString.call(obj)
   return type.match(/(?<=\[object\s)\w+(?=\])/g)[0];
@@ -59,8 +59,6 @@ async function outputFile(filePath, outputContents, distDir, basePath, type) {
     markTag = `${markTag}[\\s\\S]+${markTag}`;
     let data = File.readFile(distDir);
     if (data) {
-      // data = data.toString();
-      // data = data.split('\n').join('');
       const pattern = new RegExp(markTag, 'g');
       if (pattern.test(data)) {
         outoutStr = data.replace(pattern, outoutStr);
@@ -138,7 +136,11 @@ async function task(file, encoding, settings) {
           scriptResult += getOriginNode(node);
         } else {
           let script = parse5.serialize(node);
-          script = scriptFormat(script, settings.jsConfig.babelOption, settings.jsConfig.minify);
+          try {
+            script = scriptFormat(script, settings.jsConfig.babelOption, settings.jsConfig.minify);
+          } catch(e) {
+            console.error(e);
+          }
           format.js[key].push(script);
         }
       }
@@ -158,12 +160,16 @@ async function task(file, encoding, settings) {
   scriptResult += await outputFile(filePath, format.js.out, `${settings.jsConfig.outputDir}${fileName.js}.js`, settings.jsConfig.basePath, 'js')
 
   if (settings.layoutConfig.isLayout && !new RegExp(settings.layoutConfig.componentPattern, 'gi').test(file.relative)) {
-      let layoutTpl = fs.readFileSync(settings.layoutConfig.layoutFile, 'utf-8');
-      if (format.css.inner.length) styleResult += `<style>${format.css.inner.join('')}</style>`;
-      if (format.js.inner.length) scriptResult += `<script>${format.js.inner.join('')}</script>`;
-      result = layoutTpl.replace(new RegExp(settings.layoutConfig.replaceTag.style, 'g'), styleResult);
-      result = result.replace(new RegExp(settings.layoutConfig.replaceTag.script, 'g'), scriptResult);
-      result = result.replace(new RegExp(settings.layoutConfig.replaceTag.body, 'g'), htmlStr);
+      let layoutTpl = File.readFile(settings.layoutConfig.layoutFile);
+      if (layoutTpl === '') {
+        throw new Error(`${settings.layoutConfig.layoutFile} is not exist!`);
+      } else { 
+        if (format.css.inner.length) styleResult += `<style>${format.css.inner.join('')}</style>`;
+        if (format.js.inner.length) scriptResult += `<script>${format.js.inner.join('')}</script>`;
+        result = layoutTpl.replace(new RegExp(settings.layoutConfig.replaceTag.style, 'g'), styleResult);
+        result = result.replace(new RegExp(settings.layoutConfig.replaceTag.script, 'g'), scriptResult);
+        result = result.replace(new RegExp(settings.layoutConfig.replaceTag.body, 'g'), htmlStr);
+      }
   } else {
     styleResult += format.css.inner.length ? `<style>${format.css.inner.join('')}</style>` : '';
     result += styleResult;
@@ -221,10 +227,13 @@ module.exports = (options) => {
     if (settings.layoutConfig.isLayout && new RegExp(settings.layoutConfig.componentPattern, 'gi').test(file.relative)) {
       return callback();
     }
-
+    const _self = this;
     if (file.isBuffer()) {
-      task(file, encoding, settings).then(file => {
+        task(file, encoding, settings).then(file => {
         callback(null, file)
+      }).catch(error => {
+        console.error(error)
+        return callback();
       });
     }
   })

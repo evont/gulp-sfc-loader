@@ -1,6 +1,6 @@
 {
   "name": "gulp-sfc-loader",
-  "version": "1.0.2",
+  "version": "0.0.1",
   "description": "Gulp plugin for html SFC",
   "main": "index.js",
   "directories": {
@@ -20,6 +20,7 @@
     "gulp-util": "^3.0.8",
     "map-stream": "0.0.7",
     "parse5": "^5.1.0",
+    "plugin-error": "^1.0.1",
     "postcss": "^7.0.5",
     "postcss-load-config": "^2.0.0",
     "uglify-js": "^3.4.9",
