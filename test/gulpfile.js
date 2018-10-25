@@ -21,6 +21,11 @@ gulp.task('page', () => {
         layoutConfig: {
           isLayout: true,
           layoutFile: './views/layout.ejs',
+          replaceTag: {
+            style: '<!-- __style__ -->',
+            script: '<!-- __script__ -->',
+            body: '<!-- __body__ -->',
+          }
         }
       }))
       .pipe(gulp.dest('./dist/pages/'));

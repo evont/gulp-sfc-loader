@@ -77,14 +77,21 @@ async function outputFile(filePath, outputContents, distDir, basePath, type) {
   }
   return result[type] || '';
 }
+
 async function task(file, encoding, settings) {  
   let content = file.contents.toString(encoding);
+  // pre require template into file so we can parse the style & the script of components later;
   content = content.replace(/@requireTpl\(.+\)/g, (filePath) => {
-    filePath = filePath.match(/(?<=\(').+(?='\))/)[0];
-    filePath = path.resolve(path.dirname(file.path), filePath);
-    filePath = filePath.substr(process.cwd().length);
-    let data = File.readFile(`.${filePath}`);
-    return data;
+    let realPath = filePath.match(/(?<=\(').+(?='\))/);
+    if (realPath) {
+      realPath = realPath[0];
+      realPath = path.resolve(path.dirname(file.path), realPath);
+      realPath = realPath.substr(process.cwd().length);
+      let data = File.readFile(`.${realPath}`);
+      return data;
+    } else {
+      throw new Error(`Cannot read path of template when parsing ${filePath}`);
+    }
   });
 
   const fragment = parse5.parseFragment(content);
@@ -156,11 +163,11 @@ async function task(file, encoding, settings) {
   }
 
   let htmlStr = htmlFormat(format.html.join(''), settings.htmlMinify);
-  const filePath = file.relative.replace(/\.\w+/, ''); // 按文件名去除后缀区分，同目录下可多个文件
+  const filePath = file.relative.replace(/\.\w+/, ''); // remove suffix of the filePath, use as the markTag of file, can be used when replacing new content;
   styleResult += await outputFile(filePath, format.css.out, `${settings.cssConfig.outputDir}${fileName.css}.css`, settings.cssConfig.basePath, 'css')
   scriptResult += await outputFile(filePath, format.js.out, `${settings.jsConfig.outputDir}${fileName.js}.js`, settings.jsConfig.basePath, 'js')
 
-  if (settings.layoutConfig.isLayout && !new RegExp(settings.layoutConfig.componentPattern, 'gi').test(file.relative)) {
+  if (settings.layoutConfig.isLayout) {
       let layoutTpl = File.readFile(settings.layoutConfig.layoutFile);
       if (layoutTpl === '') {
         throw new Error(`${settings.layoutConfig.layoutFile} is not exist!`);
@@ -215,6 +222,18 @@ module.exports = (options) => {
 
   const settings = extend(defaults, options);
   
+  const replaceTag = settings.layoutConfig.replaceTag;
+  const emptyTags = [];
+  // avoid empty string in case of replacing all the file contents;
+  for (const i in replaceTag) {
+    if (replaceTag[i].trim() === '') {
+      emptyTags.push(i);
+    }
+  }
+  if (emptyTags.length) {
+    throw new Error(`${PLUGIN_NAME}: config error in layoutConfig.replaceTag, ${emptyTags.join(', ')} should not be an empty string`);
+  }
+  
   return through.obj((file, encoding, callback) => {
     if (file.isNull()) {
       return callback(null, file);
@@ -237,5 +256,4 @@ module.exports = (options) => {
       });
     }
   })
-
 }

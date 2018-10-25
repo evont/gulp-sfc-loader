@@ -40,14 +40,5 @@ module.exports = class File {
     }
 
     return fileContents;
-    // new Promise((resolve, reject) => {
-    //   fs.readFileSync(filePath, 'utf-8', (err, data) => {
-    //     if (data) {
-    //       resolve(data);
-    //     } else {
-    //       resolve('');
-    //     }
-    //   })
-    // });
   }
 }
