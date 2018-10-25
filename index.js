@@ -127,6 +127,7 @@ async function task(file, encoding, settings) {
         let style = parse5.serialize(node);
         if (!style.trim()) return;
         if (!lang) lang = 'css';
+        if (lang === 'scss') lang = 'sass';
         style = await styleFormate(style, lang, settings.cssConfig.minify);
         format.css[key].push(style);
       } 
@@ -227,7 +228,6 @@ module.exports = (options) => {
     if (settings.layoutConfig.isLayout && new RegExp(settings.layoutConfig.componentPattern, 'gi').test(file.relative)) {
       return callback();
     }
-    const _self = this;
     if (file.isBuffer()) {
         task(file, encoding, settings).then(file => {
         callback(null, file)

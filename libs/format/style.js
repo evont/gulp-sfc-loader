@@ -3,6 +3,8 @@ const postcssrc = require('postcss-load-config')
 const ctx = { map: false }
 const CleanCSS = require('clean-css');
 
+const sass = require("node-sass");
+
 const handler = {
   postCss: (style) => {
     const result = postcssrc(ctx).then(({ plugins, options }) => {
@@ -12,6 +14,17 @@ const handler = {
       return css;
     });
     return result;
+  },
+  sass: (style) => {
+    return new Promise((resolve, reject) => {
+      sass.render({ data: style, }, (error, result) => {
+        if (error) {
+          console.error(error)
+        } else {
+          resolve(result.css.toString());
+        }
+      });
+    })
   }
 }
 module.exports = async (style, type, isMinify = true) => {
