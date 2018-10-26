@@ -82,12 +82,20 @@ async function task(file, encoding, settings) {
   let content = file.contents.toString(encoding);
   // pre require template into file so we can parse the style & the script of components later;
   content = content.replace(/@requireTpl\(.+\)/g, (filePath) => {
-    let realPath = filePath.match(/(?<=\(').+(?='\))/);
+    let argument = filePath.match(/\{.+\}/);
+    let realPath = filePath.match(/(?<=').+(?='[,\)]{1})/);
     if (realPath) {
       realPath = realPath[0];
       realPath = path.resolve(path.dirname(file.path), realPath);
       realPath = realPath.substr(process.cwd().length);
       let data = File.readFile(`.${realPath}`);
+      if (argument) {
+        argument = eval(`(${argument[0]})`);
+        if (argument.escapeEjs === true) {
+          // console.log('escape ejs')
+          data = htmlFormat.escapeEjs(data); 
+        }
+      }
       return data;
     } else {
       throw new Error(`Cannot read path of template when parsing ${filePath}`);
@@ -162,7 +170,7 @@ async function task(file, encoding, settings) {
     }
   }
 
-  let htmlStr = htmlFormat(format.html.join(''), settings.htmlMinify);
+  let htmlStr = htmlFormat.format(format.html.join(''), settings.htmlMinify);
   const filePath = file.relative.replace(/\.\w+/, ''); // remove suffix of the filePath, use as the markTag of file, can be used when replacing new content;
   styleResult += await outputFile(filePath, format.css.out, `${settings.cssConfig.outputDir}${fileName.css}.css`, settings.cssConfig.basePath, 'css')
   scriptResult += await outputFile(filePath, format.js.out, `${settings.jsConfig.outputDir}${fileName.js}.js`, settings.jsConfig.basePath, 'js')
@@ -233,7 +241,7 @@ module.exports = (options) => {
   if (emptyTags.length) {
     throw new Error(`${PLUGIN_NAME}: config error in layoutConfig.replaceTag, ${emptyTags.join(', ')} should not be an empty string`);
   }
-  
+
   return through.obj((file, encoding, callback) => {
     if (file.isNull()) {
       return callback(null, file);

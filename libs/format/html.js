@@ -85,11 +85,16 @@ function unescapeHTML(a) {
   return a.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&apos;/g, "'");
 }
 
-module.exports = (content, isMinify = true) => {
-  if (isMinify) {
-    return minify(unescapeHTML(content));
-  } else {
-    content = content.trim();
-  }
-  return content;
+module.exports = {
+    escapeEjs: (content) => {
+        return content.replace(/<%/g, '<%%').replace(/%>/g, '%%>')
+    },
+    format: (content, isMinify = true) => {
+        if (isMinify) {
+            return minify(unescapeHTML(content));
+        } else {
+            content = content.trim();
+        }
+        return content;
+    }
 };

@@ -121,7 +121,8 @@ gulp.task('default', () => {
 <div class="mod">
   <div class="view">
     <!-- 支持使用@requireTpl方法引入组件到页面中 -->
-    @requireTpl('./component/index.ejs')
+    <!-- 支持使用参数，目前支持使用 escapeEjs 参数将引入的ejs 文件中的<% 及 %> 替换为<%% 和 %%> -->
+    @requireTpl('./component/index.ejs', { escapeEjs: true })
   </div>
 </div>
 <!-- js 支持使用es6 及以上语法，将编译压缩，同样支持内联，使用inline属性，babel 配置项可在babelrc中配置-->
