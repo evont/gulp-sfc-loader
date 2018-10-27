@@ -1,6 +1,6 @@
 {
   "name": "gulp-sfc-loader",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Gulp plugin for html SFC",
   "main": "index.js",
   "directories": {
@@ -10,10 +10,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
-    "type": "https://github.com/evont/gulp-sfc-loader.git"    
+    "type": "https://github.com/evont/gulp-sfc-loader.git"
   },
-  "keywords":[
-    "gulp", "ejs", "sfc"
+  "keywords": [
+    "gulp",
+    "ejs",
+    "sfc"
   ],
   "author": "Evont",
   "license": "ISC",
