@@ -51,7 +51,7 @@ function extend(obj, obj2) {
 }
 
 async function outputFile(filePath, outputContents, distDir, basePath, type) {
-  
+  let result = ''
   if (outputContents.length) {
     let markTag = `/*${filePath}*/`;
     let outoutStr = `${markTag}${outputContents.join('')}${markTag}`;
@@ -67,40 +67,53 @@ async function outputFile(filePath, outputContents, distDir, basePath, type) {
       }
     }
     await File.writeFile(distDir, outoutStr);
+
+    if (basePath !== '') {
+      distDir = basePath + path.basename(distDir);
+    }
+    const tagMap = {
+      css: `<link rel="text/stylesheet" href="${distDir}">`,
+      js: `<script src="${distDir}"></script>`,
+    }
+    result = tagMap[type] || '';
   }
-  if (basePath !== '') {
-    distDir = basePath + path.basename(distDir);
+  return result
+}
+
+function getArgument(key, str) {
+  const pattern = new RegExp(`(?<=${key})(=\\"\\S+\\")?`, 'g');
+  let result = false;
+  const matchRes = str.match(pattern);
+  if (matchRes) {
+    let value = matchRes[0].trim();
+    if (value === '') {
+      result = true;
+    } else {
+      result = value.match(/(?<=\")\S+(?=\")/)[0]
+    }
   }
-  const result = {
-    css: `<link rel="text/stylesheet" href="${distDir}">`,
-    js: `<script src="${distDir}"></script>`,
-  }
-  return result[type] || '';
+  return result;
 }
 
 async function task(file, encoding, settings) {  
   let content = file.contents.toString(encoding);
-  // pre require template into file so we can parse the style & the script of components later;
-  content = content.replace(/@requireTpl\(.+\)/g, (filePath) => {
-    let argument = filePath.match(/\{.+\}/);
-    let realPath = filePath.match(/(?<=').+(?='[,\)]{1})/);
-    if (realPath) {
-      realPath = realPath[0];
-      realPath = path.resolve(path.dirname(file.path), realPath);
-      realPath = realPath.substr(process.cwd().length);
-      let data = File.readFile(`.${realPath}`);
-      if (argument) {
-        argument = eval(`(${argument[0]})`);
-        if (argument.escapeEjs === true) {
-          // console.log('escape ejs')
+  if (content.match(/<template.*(src=).*(?=\/>|><\/template>)/g)) {
+    content = content.replace(/<template.+(\/>|><\/template>)/g, (filePath) => {
+      let realPath = getArgument('src', filePath);
+      if (realPath) {
+        realPath = path.resolve(path.dirname(file.path), realPath);
+        realPath = realPath.substr(process.cwd().length);
+        let data = File.readFile(`.${realPath}`);
+        let isEscapeEjs = getArgument('escapeEjs', filePath);
+        if (isEscapeEjs) {
           data = htmlFormat.escapeEjs(data); 
         }
+        return data;
+      } else {
+        throw new Error(`Cannot read path of template when parsing ${filePath}`);
       }
-      return data;
-    } else {
-      throw new Error(`Cannot read path of template when parsing ${filePath}`);
-    }
-  });
+    });
+  }
 
   const fragment = parse5.parseFragment(content);
   const outTags = ['style', 'script'];
@@ -180,6 +193,7 @@ async function task(file, encoding, settings) {
       if (layoutTpl === '') {
         throw new Error(`${settings.layoutConfig.layoutFile} is not exist!`);
       } else { 
+        layoutTpl = htmlFormat.minify(layoutTpl);
         if (format.css.inner.length) styleResult += `<style>${format.css.inner.join('')}</style>`;
         if (format.js.inner.length) scriptResult += `<script>${format.js.inner.join('')}</script>`;
         result = layoutTpl.replace(new RegExp(settings.layoutConfig.replaceTag.style, 'g'), styleResult);
@@ -201,6 +215,7 @@ async function task(file, encoding, settings) {
 module.exports = (options) => {
   const defaults = {
     htmlMinify: true,
+    pathMap: {},
     cssConfig: {
       name: 'common',
       outputDir: './',

@@ -1,5 +1,5 @@
 # Intro
-Gulp-SFC-loader 是一个使用单文件组件思想，用于方便传统HTML 项目进行模块化，同时完成內联js 及css编译及抽离的gulp 插件；基于加载速度优化的策略，
+Gulp-SFC-loader 是一个使用单文件组件思想，用于方便传统HTML 项目进行模块化，同时完成內联js 及css编译及抽离的gulp 插件；基于加载速度优化的策略，默认会开启对文件的压缩；
 
 ## Install
 ```

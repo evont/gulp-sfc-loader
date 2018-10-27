@@ -89,6 +89,7 @@ module.exports = {
     escapeEjs: (content) => {
         return content.replace(/<%/g, '<%%').replace(/%>/g, '%%>')
     },
+    minify, 
     format: (content, isMinify = true) => {
         if (isMinify) {
             return minify(unescapeHTML(content));
