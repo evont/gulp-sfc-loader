@@ -11,6 +11,7 @@ npm install gulp-sfc-loader
 ```javascript
 {
   htmlMinify: true,
+  templateTag: 'template',
   cssConfig: {
     name: 'common',
     outputDir: './',
@@ -39,6 +40,7 @@ npm install gulp-sfc-loader
 }
 ```
 - `htmlMinify` 是否压缩html，默认开启
+- `templateTag` 模板替换标签，默认为`template`
 - `cssConfig` 
   - `name` 导出css 的文件名，如果是字符串，则所有css 将合并在此文件中，也可以是一个带有文件目录参数的函数，可以解析使用当前目录名左作为css 文件名
   - `outputDir` 导出css 到指定的目录
@@ -122,7 +124,9 @@ gulp.task('default', () => {
   <div class="view">
     <!-- 支持使用@requireTpl方法引入组件到页面中 -->
     <!-- 支持使用参数，目前支持使用 escapeEjs 参数将引入的ejs 文件中的<% 及 %> 替换为<%% 和 %%> -->
-    @requireTpl('./component/index.ejs', { escapeEjs: true })
+    <!-- deprecated @requireTpl('./component/index.ejs', { escapeEjs: true }) -->
+    <!-- 现使用templateTag 字段作为模板替换标签，避免编译失败时渲染网页出现不必要字符的问题 -->
+    <template src="./component/index.ejs" escapeEjs></template>
   </div>
 </div>
 <!-- js 支持使用es6 及以上语法，将编译压缩，同样支持内联，使用inline属性，babel 配置项可在babelrc中配置-->

@@ -4,6 +4,7 @@ const ejsLoader = require('../index');
 gulp.task('page', () => {
   return gulp.src('./views/pages/**/*.ejs')
       .pipe(ejsLoader({
+        templateTag: 'tpl',
         cssConfig: {
           name: (path) => {
             return path.match(/\w+(?=\/)(?!\.ejs)/g)[0] ;

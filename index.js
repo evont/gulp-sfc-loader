@@ -95,10 +95,11 @@ function getArgument(key, str) {
   return result;
 }
 
-async function task(file, encoding, settings) {  
+async function task(file, encoding, settings) {   
   let content = file.contents.toString(encoding);
-  if (content.match(/<template.*(src=).*(?=\/>|><\/template>)/g)) {
-    content = content.replace(/<template.+(\/>|><\/template>)/g, (filePath) => {
+  const templatePattern = new RegExp(`<${settings.templateTag}.*(src=).*(?=\\/>|><\\/${settings.templateTag}>)`, 'g');
+  if (content.match(templatePattern)) {
+    content = content.replace(new RegExp(`<${settings.templateTag}.+(\\/>|><\\/${settings.templateTag}>)`, 'g'), (filePath) => {
       let realPath = getArgument('src', filePath);
       if (realPath) {
         realPath = path.resolve(path.dirname(file.path), realPath);
@@ -215,7 +216,7 @@ async function task(file, encoding, settings) {
 module.exports = (options) => {
   const defaults = {
     htmlMinify: true,
-    pathMap: {},
+    templateTag: 'template',
     cssConfig: {
       name: 'common',
       outputDir: './',
