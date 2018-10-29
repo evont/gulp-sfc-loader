@@ -103,7 +103,7 @@ async function task(file, encoding, settings) {
       let realPath = getArgument('src', filePath);
       if (realPath) {
         realPath = path.resolve(path.dirname(file.path), realPath);
-        realPath.replace(process.cwd(), '');
+        realPath = realPath.replace(process.cwd(), '');
         let data = File.readFile(`.${realPath}`);
         let isEscapeEjs = getArgument('escapeEjs', filePath);
         if (isEscapeEjs) {
