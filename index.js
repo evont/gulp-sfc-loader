@@ -103,7 +103,7 @@ async function task(file, encoding, settings) {
       let realPath = getArgument('src', filePath);
       if (realPath) {
         realPath = path.resolve(path.dirname(file.path), realPath);
-        realPath = realPath.substr(process.cwd().length);
+        realPath.replace(process.cwd(), '');
         let data = File.readFile(`.${realPath}`);
         let isEscapeEjs = getArgument('escapeEjs', filePath);
         if (isEscapeEjs) {
@@ -169,7 +169,7 @@ async function task(file, encoding, settings) {
           try {
             script = scriptFormat(script, settings.jsConfig.babelOption, settings.jsConfig.minify);
           } catch(e) {
-            console.error(e);
+            settings.jsConfig.logError && console.error(e);
           }
           format.js[key].push(script);
         }
@@ -231,6 +231,7 @@ module.exports = (options) => {
       babelOption: {
         presets: ['@babel/env']
       },
+      logError: false,
     },
     layoutConfig: {
       componentPattern: 'component',
