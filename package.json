@@ -28,6 +28,7 @@
     "cssnano": "^4.1.7",
     "gulp": "^4.0.0",
     "gulp-util": "^3.0.8",
+    "hyntax": "^1.0.7",
     "map-stream": "0.0.7",
     "node-sass": "^4.9.4",
     "parse5": "^5.1.0",

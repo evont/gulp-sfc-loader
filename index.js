@@ -1,5 +1,9 @@
 const parse5 = require('parse5');
 const treeAdapeter = require('parse5/lib/tree-adapters/default');
+
+const { tokenize, constructTree } = require('hyntax')
+const util = require('util')
+
 const path = require('path');
 const through = require('through2');
 const plugError = require('plugin-error');
@@ -72,7 +76,7 @@ async function outputFile(filePath, outputContents, distDir, basePath, type) {
       distDir = basePath + path.basename(distDir);
     }
     const tagMap = {
-      css: `<link rel="text/stylesheet" href="${distDir}">`,
+      css: `<link rel="stylesheet" href="${distDir}">`,
       js: `<script src="${distDir}"></script>`,
     }
     result = tagMap[type] || '';
@@ -115,8 +119,10 @@ async function task(file, encoding, settings) {
       }
     });
   }
-
+  
   const fragment = parse5.parseFragment(content);
+  const { tokens } = tokenize(content)
+  const { ast } = constructTree(tokens)
   const outTags = ['style', 'script'];
 
   const format = {
